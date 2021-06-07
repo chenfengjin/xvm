@@ -44,7 +44,7 @@ func compileLibrary(wasmpath string) (string, error) {
 	}
 	defer os.RemoveAll(tmpdir)
 	cfg := &compile.Config{
-		Wasm2cPath: "wasm2c",
+		Wasm2cPath: "/Users/chenfengjin/baidu/xuperchain/output/wasm2c",
 		OptLevel:   0,
 	}
 	libpath := replaceExt(wasmpath, ".so")
@@ -79,6 +79,8 @@ func prepareArgs(mem []byte, args []string, envs []string) (int, int) {
 	for _, addr := range argvAddr {
 		if *environ == "go" {
 			binary.Write(buf, binary.LittleEndian, uint64(addr))
+		} else if *environ == "rust" {
+			binary.Write(buf, binary.LittleEndian, uint32(addr))
 		} else {
 			binary.Write(buf, binary.LittleEndian, uint32(addr))
 		}
@@ -128,13 +130,19 @@ func run(modulePath string, args []string) error {
 	case "go":
 		entry = "run"
 		gowasm.RegisterRuntime(ctx)
+	case "rust":
+		entry = "call_method"
 	}
 
-	var argc, argv int
+	//var argc, argv int
 	if ctx.Memory() != nil {
-		argc, argv = prepareArgs(ctx.Memory(), args, nil)
+		//argc, argv = prepareArgs(ctx.Memory(), args, nil)
+		//argc = 0
+		//argv = 0
 	}
-	ret, err := ctx.Exec(entry, []int64{int64(argc), int64(argv)})
+	//ret, err := ctx.Exec(entry, []int64{int64(argc), int64(argv)})
+	ret, err := ctx.Exec(entry, []int64{})
+
 	fmt.Println("gas: ", ctx.GasUsed())
 	fmt.Println("ret: ", ret)
 	return err
