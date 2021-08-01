@@ -44,7 +44,7 @@ func compileLibrary(wasmpath string) (string, error) {
 	}
 	defer os.RemoveAll(tmpdir)
 	cfg := &compile.Config{
-		Wasm2cPath: "/Users/chenfengjin/baidu/xuperchain/output/wasm2c",
+		Wasm2cPath: "/Users/chenfengjin/baidu/xuperchain/output/bin/wasm2c",
 		OptLevel:   0,
 	}
 	libpath := replaceExt(wasmpath, ".so")
@@ -131,15 +131,20 @@ func run(modulePath string, args []string) error {
 		entry = "run"
 		gowasm.RegisterRuntime(ctx)
 	case "rust":
-		entry = "call_method"
+		entry = "greet"
+
+		//err = emscripten.Init(ctx)
+		//if err != nil {
+		//	return err
+		//}
 	}
 
 	//var argc, argv int
-	if ctx.Memory() != nil {
+	//if ctx.Memory() != nil {
 		//argc, argv = prepareArgs(ctx.Memory(), args, nil)
 		//argc = 0
 		//argv = 0
-	}
+	//}
 	//ret, err := ctx.Exec(entry, []int64{int64(argc), int64(argv)})
 	ret, err := ctx.Exec(entry, []int64{})
 
