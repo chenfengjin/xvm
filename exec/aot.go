@@ -1,5 +1,9 @@
 package exec
 
+// #include "xvm.h"
+// #include "stdlib.h"
+// extern xvm_resolver_t make_resolver_t(void* env);
+// #cgo LDFLAGS: -ldl
 import "C"
 import (
 	"errors"
