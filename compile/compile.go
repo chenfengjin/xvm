@@ -60,7 +60,7 @@ func CompileCSource(cfg *Config, target, source string) (err error) {
 // CompileNativeLibrary compile a wasm file to native shared library
 func CompileNativeLibrary(cfg *Config, target, source string) error {
 	var err error
-	if cfg.OptLevel < 0 || cfg.OptLevel > 2 {
+	if cfg.OptLevel < 0 || cfg.OptLevel > 3 {
 		return errors.New("bad OptLevel, must in range [0,2]")
 	}
 	tmpdir, err := ioutil.TempDir("", "xvm-compile")
@@ -90,6 +90,7 @@ func CompileNativeLibrary(cfg *Config, target, source string) error {
 		csource,
 		"-lm",
 	)
+	fmt.Println(cmd.String())
 	cmd.Stderr = stderr
 	err = cmd.Run()
 	if err != nil {

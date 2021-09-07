@@ -1,10 +1,10 @@
 #include "src/cast.h"
 #include "src/common.h"
+#include "src/gas-cost-table.h"
 #include "src/ir.h"
 #include "src/literal.h"
 #include "src/stream.h"
 #include "src/string-view.h"
-#include "src/gas-cost-table.h"
 
 namespace wabt {
 namespace {
@@ -235,7 +235,7 @@ void GasWriter::WriteFunc(Func* func) {
   ExprList& exprs = func->exprs;
   WriteExprList(&exprs);
 }
-}
+}  // namespace
 
 void WriteModuleGas(Module* module) {
   GasWriter writer;
@@ -243,4 +243,4 @@ void WriteModuleGas(Module* module) {
     writer.WriteFunc(func);
   }
 }
-}
+}  // namespace wabt

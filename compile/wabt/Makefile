@@ -21,7 +21,7 @@ clean:
 $(BUILD_DIR)/libwabt.a: $(OBJS)
 	ar rc $@ $^
 	ranlib $@
-
+wasm2c: $(BUILD_DIR)/wasm2c
 $(BUILD_DIR)/wasm2c: $(BUILD_DIR)/src/tools/wasm2c.cc.o $(BUILD_DIR)/libwabt.a 
 	$(CXX) -o $@ $^
 
