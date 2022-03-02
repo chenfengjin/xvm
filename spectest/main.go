@@ -9,13 +9,11 @@ import (
 	"log"
 	"math"
 	"os"
-	osexec "os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"unsafe"
 
-	"github.com/xuperchain/xvm/compile"
 	"github.com/xuperchain/xvm/exec"
 )
 
@@ -101,15 +99,19 @@ var resolver = exec.MapResolver(map[string]interface{}{
 })
 
 func newModule(modulePath string) (*module, error) {
-	targetPath := modulePath + ".so"
-	err := compile.CompileNativeLibrary(&compile.Config{
-		Wasm2cPath: wasm2cPath,
-	}, targetPath, modulePath)
+	// targetPath := modulePath + ".so"
+	// err := compile.CompileNativeLibrary(&compile.Config{
+	// 	Wasm2cPath: wasm2cPath,
+	// }, targetPath, modulePath)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// targetPath, _ = filepath.Abs(targetPath)
+	codeBuffer, err := ioutil.ReadFile(modulePath)
 	if err != nil {
 		return nil, err
 	}
-	targetPath, _ = filepath.Abs(targetPath)
-	code, err := exec.NewAOTCode(targetPath, resolver)
+	code, err := exec.NewInterpCode(codeBuffer, resolver)
 	if err != nil {
 		return nil, err
 	}
@@ -355,13 +357,14 @@ func newTestRunner(cfg *runnerConfig) *testRunner {
 	}
 	return &testRunner{
 		cfg:      cfg,
-		stageDir: stageDir,
+		stageDir: "stage",
+		// stageDir: stageDir,
 	}
 }
 
 func (t *testRunner) Close() {
 	if t.cfg.StageDir == "" {
-		os.RemoveAll(t.stageDir)
+		// os.RemoveAll(t.stageDir)
 	}
 }
 
@@ -392,12 +395,12 @@ func (t *testRunner) RunTest(wastFile string) {
 	testdir := filepath.Join(t.stageDir, basename)
 	os.MkdirAll(testdir, 0700)
 	jsonfile := filepath.Join(testdir, basename+".json")
-	cmd := osexec.Command(wast2jsonPath, "-o", jsonfile, wastFile)
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		panic(err)
-	}
+	// cmd := osexec.Command(wast2jsonPath, "-o", jsonfile, wastFile)
+	// cmd.Stderr = os.Stderr
+	// err := cmd.Run()
+	// if err != nil {
+	// 	panic(err)
+	// }
 	t.RunJSONScript(jsonfile)
 
 	fmt.Printf("total:%d passed:%d\n", t.lastTotal, t.lastPassed)
@@ -405,7 +408,7 @@ func (t *testRunner) RunTest(wastFile string) {
 }
 
 func (t *testRunner) RunTestDir(dir string) {
-	freg := regexp.MustCompile(`^name|^linking|^skip-stack`)
+	freg := regexp.MustCompile(`^name|^linking|^skip-stack|^call|^fac|^global|^start|align|imports`)
 	testFiles, err := filepath.Glob(filepath.Join(dir, "*.wast"))
 	if err != nil {
 		panic(err)
@@ -434,11 +437,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if flag.NArg() == 0 {
-		fmt.Println("usage: ./spectest xxx.wast|directory")
-		return
-	}
-	testTarget := flag.Arg(0)
+	// if flag.NArg() == 0 {
+	// 	fmt.Println("usage: ./spectest xxx.wast|directory")
+	// 	return
+	// }
+	// testTarget := flag.Arg(0)
+	testTarget := "core"
 	stat, err := os.Stat(testTarget)
 	if err != nil {
 		log.Fatal(err)
