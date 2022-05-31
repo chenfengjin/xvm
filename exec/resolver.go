@@ -166,6 +166,13 @@ func applyFuncCall(ctx Context, f interface{}, params []uint32) (uint32, bool) {
 			return 0, false
 		}
 		return fun(ctx, params[0], params[1], params[2], params[3]), true
+	// 	TODO
+	case func(Context, uint32, uint32, uint32, uint32):
+		if len != 4 {
+			return 0, false
+		}
+		fun(ctx, params[0], params[1], params[2], params[3])
+		return 0, true
 	case func(Context, uint32, uint32, uint32, uint32, uint32) uint32:
 		if len != 5 {
 			return 0, false

@@ -44,7 +44,7 @@ func compileLibrary(wasmpath string) (string, error) {
 	}
 	defer os.RemoveAll(tmpdir)
 	cfg := &compile.Config{
-		Wasm2cPath: "wasm2c",
+		Wasm2cPath: "compile/wabt/build/wasm2c",
 		OptLevel:   0,
 	}
 	libpath := replaceExt(wasmpath, ".so")
@@ -134,7 +134,9 @@ func run(modulePath string, args []string) error {
 	if ctx.Memory() != nil {
 		argc, argv = prepareArgs(ctx.Memory(), args, nil)
 	}
-	ret, err := ctx.Exec(entry, []int64{int64(argc), int64(argv)})
+	// TODO
+	_, _ = argc, argv
+	ret, err := ctx.Exec(entry, []int64{})
 	fmt.Println("gas: ", ctx.GasUsed())
 	fmt.Println("ret: ", ret)
 	return err
