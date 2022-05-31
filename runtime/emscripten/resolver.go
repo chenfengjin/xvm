@@ -130,9 +130,13 @@ var resolver = exec.MapResolver(map[string]interface{}{
 		exec.Throw(exec.NewTrap("abort"))
 		return 0
 	},
-	"env.___cxa_allocate_exception": func(ctx exec.Context, x uint32) uint32 {
-		// exec.Throw(exec.NewTrap("allocate exception"))
-		return 0
+	"env.___cxa_allocate_exception": func(ctx exec.Context, size uint32) uint32 {
+		// TODO may overflow,but rarely seen in malloc memory for exception
+		allocated, err := Malloc(ctx, int(size))
+		if err != nil {
+			exec.Throw(exec.NewTrap("allocate exception"))
+		}
+		return allocated
 	},
 	"env.___cxa_throw": func(ctx exec.Context, x, y, z uint32) uint32 {
 		// exec.Throw(exec.NewTrap("throw"))
@@ -273,17 +277,24 @@ var resolver = exec.MapResolver(map[string]interface{}{
 		return 0
 	},
 	"env.__cxa_find_matching_catch_2": func(ctx exec.Context) uint32 { return 0 },
-	"env.invoke_viii":                 func(ctx exec.Context, a, b, c, d uint32) {},
-	"env.getTempRet0":                 func(ctx exec.Context) uint32 { return 0 },
-	"env.invoke_v":                    func(ctx exec.Context, x uint32) {},
-	"env.__resumeException":           func(ctx exec.Context, x uint32) {},
-	"env.invoke_vii":                  func(ctx exec.Context, a, b, c uint32) {},
-	"env.__table_base":                int64(0),
-	"env.tableBase":                   int64(0),
-	"env.DYNAMICTOP_PTR":              int64(mutableGlobalsBase + uint32(unsafe.Offsetof(new(mutableGlobals).HeapBase))),
-	"global.NaN":                      int64(math.Float64bits(math.NaN())),
-	"global.Infinity":                 int64(math.Float64bits(math.Inf(0))),
-	"env.setTempRet0":                 func(ctx exec.Context, x uint32) {},
+
+	"env.___cxa_get_exception_ptr": func(ctx exec.Context, x uint32) uint32 {
+		return 0
+	},
+	"env._llvm_eh_typeid_for": func(ctx exec.Context, x uint32) uint32 {
+		return 0
+	},
+	"env.invoke_viii":        func(ctx exec.Context, a, b, c, d uint32) {},
+	"env.getTempRet0":        func(ctx exec.Context) uint32 { return 0 },
+	"env.invoke_v":           func(ctx exec.Context, x uint32) {},
+	"env.___resumeException": func(ctx exec.Context, x uint32) {},
+	"env.invoke_vii":         func(ctx exec.Context, a, b, c uint32) {},
+	"env.__table_base":       int64(0),
+	"env.tableBase":          int64(0),
+	"env.DYNAMICTOP_PTR":     int64(mutableGlobalsBase + uint32(unsafe.Offsetof(new(mutableGlobals).HeapBase))),
+	"global.NaN":             int64(math.Float64bits(math.NaN())),
+	"global.Infinity":        int64(math.Float64bits(math.Inf(0))),
+	"env.setTempRet0":        func(ctx exec.Context, x uint32) {},
 })
 
 func errno(n int32) uint32 {
