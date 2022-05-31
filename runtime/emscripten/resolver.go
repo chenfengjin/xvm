@@ -231,6 +231,28 @@ var resolver = exec.MapResolver(map[string]interface{}{
 		return 0
 	},
 
+	"env.llvm_gcda_start_file": func(ctx exec.Context, a, b, c uint32) {
+		fmt.Println("llvm_gcda_start_file")
+
+	},
+	"env.llvm_gcda_emit_function": func(ctx exec.Context, a, b, c uint32) {
+		fmt.Println("llvm_gcda_emit_function")
+	},
+	"env.llvm_gcda_emit_arcs": func(ctx exec.Context, a, b uint32) {
+		fmt.Println("llvm_gcda_emit_arcs")
+	},
+	"env.llvm_gcda_summary_info": func(ctx exec.Context) {
+		fmt.Println("llvm_gcda_summary_info")
+	},
+	"env.llvm_gcda_end_file": func(ctx exec.Context) {
+		fmt.Println("llvm_gcda_end_file")
+
+	},
+	"env.llvm_gcov_init": func(ctx exec.Context, a, b uint32) {
+		fmt.Println("llvm_gcov_init")
+
+	},
+
 	"env.__table_base":   int64(0),
 	"env.tableBase":      int64(0),
 	"env.DYNAMICTOP_PTR": int64(mutableGlobalsBase + uint32(unsafe.Offsetof(new(mutableGlobals).HeapBase))),
