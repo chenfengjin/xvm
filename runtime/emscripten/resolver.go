@@ -248,7 +248,6 @@ var resolver = exec.MapResolver(map[string]interface{}{
 
 	"env.llvm_gcda_start_file": func(ctx exec.Context, a, b, c uint32) {
 		fmt.Println("llvm_gcda_start_file")
-
 	},
 	"env.llvm_gcda_emit_function": func(ctx exec.Context, a, b, c uint32) {
 		fmt.Println("llvm_gcda_emit_function")
@@ -261,11 +260,9 @@ var resolver = exec.MapResolver(map[string]interface{}{
 	},
 	"env.llvm_gcda_end_file": func(ctx exec.Context) {
 		fmt.Println("llvm_gcda_end_file")
-
 	},
 	"env.llvm_gcov_init": func(ctx exec.Context, a, b uint32) {
 		fmt.Println("llvm_gcov_init")
-
 	},
 
 	"env.__table_base":   int64(0),
