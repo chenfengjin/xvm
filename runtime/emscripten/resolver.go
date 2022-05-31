@@ -230,6 +230,9 @@ var resolver = exec.MapResolver(map[string]interface{}{
 		exec.Throw(exec.NewTrap("assert_fail"))
 		return 0
 	},
+	"env.emscripten_notify_memory_growth": func(ctx exec.Context, index uint32) uint32 {
+		return 0
+	},
 
 	"env.llvm_gcda_start_file": func(ctx exec.Context, a, b, c uint32) {
 		fmt.Println("llvm_gcda_start_file")
