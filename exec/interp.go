@@ -24,6 +24,59 @@ var funcTypes = []interface{}{
 	(func(*exec.Process, uint32, uint32, uint32, uint32, uint32, uint32, uint32) uint32)(nil),
 }
 
+func applyFuncCall(ctx Context, f interface{}, params []uint32) (uint32, bool) {
+	len := len(params)
+	switch fun := f.(type) {
+	case func(Context) uint32:
+		if len != 0 {
+			return 0, false
+		}
+		return fun(ctx), true
+	case func(Context, uint32) uint32:
+		if len != 1 {
+			return 0, false
+		}
+		return fun(ctx, params[0]), true
+	case func(Context, uint32, uint32) uint32:
+		if len != 2 {
+			return 0, false
+		}
+		return fun(ctx, params[0], params[1]), true
+	case func(Context, uint32, uint32, uint32) uint32:
+		if len != 3 {
+			return 0, false
+		}
+		return fun(ctx, params[0], params[1], params[2]), true
+	case func(Context, uint32, uint32, uint32, uint32) uint32:
+		if len != 4 {
+			return 0, false
+		}
+		return fun(ctx, params[0], params[1], params[2], params[3]), true
+	case func(Context, uint32, uint32, uint32, uint32, uint32) uint32:
+		if len != 5 {
+			return 0, false
+		}
+		return fun(ctx, params[0], params[1], params[2], params[3], params[4]), true
+	case func(Context, uint32, uint32, uint32, uint32, uint32, uint32) uint32:
+		if len != 6 {
+			return 0, false
+		}
+		return fun(ctx, params[0], params[1], params[2], params[3], params[4], params[5]), true
+	case func(Context, uint32, uint32, uint32, uint32, uint32, uint32, uint32) uint32:
+		if len != 7 {
+			return 0, false
+		}
+		return fun(ctx, params[0], params[1], params[2], params[3], params[4], params[5], params[6]), true
+	case func(Context, uint32, uint32, uint32, uint32, uint32, uint32, uint32, uint32) uint32:
+		if len != 8 {
+			return 0, false
+		}
+		return fun(ctx, params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]), true
+	default:
+		return 0, false
+	}
+}
+
 func makeExportFunc(sig wasm.FunctionSig, fun interface{}) (*wasm.Function, error) {
 	paramLen := len(sig.ParamTypes)
 	if paramLen >= len(funcTypes) {
@@ -69,6 +122,12 @@ func makeExportGlobal(sig *wasm.GlobalVar, v int64) (*wasm.GlobalEntry, error) {
 		Type: *sig,
 		Init: buf.Bytes(),
 	}, nil
+}
+
+// A Resolver resolves global and function symbols imported by wasm code
+type Resolver interface {
+	ResolveFunc(module, name string) (interface{}, bool)
+	ResolveGlobal(module, name string) (int64, bool)
 }
 
 func makeWagonModule(resolver Resolver) wasm.ResolveModuleFunc {
